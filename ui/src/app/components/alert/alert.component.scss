@@ -1,0 +1,134 @@
+.close-alert {
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.alert {
+  border-width: 0 0 0 4px;
+  border-style: solid;
+  padding: 1.5rem;
+  margin: 2rem 2rem 2.5rem 2rem;
+  color: black;
+}
+
+.alert__header {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.alert__header-icon {
+  display: inline-block;
+  vertical-align: top;
+  margin-right: 0.95rem;
+
+  svg {
+    width: 36px;
+    height: 36px;
+
+    @media screen and (max-width: 40em) {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  img {
+    width: 36px;
+    height: 36px;
+
+    @media screen and (max-width: 40em) {
+      width: 32px;
+      height: 32px;
+    }
+  }
+}
+
+.alert__header-title {
+  margin-bottom: 0.75rem;
+  padding-top: 2px;
+}
+
+.alert__body {
+  margin-left: 3.25rem;
+  max-width: 48rem;
+
+  @media screen and (max-width: 40em) {
+    margin-left: 0;
+  }
+}
+
+.alert__body p {
+  margin-top: 0;
+
+  &:last-of-type {
+    margin-bottom: 0.5rem;
+  }
+}
+
+.alert__body p:last-of-type + ul {
+  margin-top: 1rem;
+}
+
+.alert__body ul:last-of-type {
+  margin-bottom: 0.5rem;
+}
+
+.alert--error ul {
+  margin-left: 1.25rem;
+}
+
+.alert--error ul:last-of-type {
+  margin-bottom: 0.5rem;
+}
+
+// ---------------------
+//    Alert variations
+// ---------------------
+$colour-information: #1080a6;
+$colour-information-light: #e2f0f4;
+$colour-warning: #ffd440;
+$colour-warning-light: #fef6dc;
+$colour-success: #118847;
+$colour-success-light: #e5f0e9;
+$colour-alert: #cd0000;
+$colour-alert-light: #fceff0;
+
+// informational alert
+.alert--informational {
+  border-color: $colour-information;
+  background-color: $colour-information-light;
+}
+
+.alert--informational svg {
+  fill: $colour-information;
+}
+
+// warning alert
+.alert--warning {
+  border-color: $colour-warning;
+  background-color: $colour-warning-light;
+}
+
+.alert--warning svg {
+  fill: $colour-warning;
+}
+
+// success alert
+.alert--success {
+  border-color: $colour-success;
+  background-color: $colour-success-light;
+}
+
+.alert--success svg {
+  fill: $colour-success;
+}
+
+// error alert
+.alert--error {
+  border-color: $colour-alert;
+  background-color: $colour-alert-light;
+}
+
+.alert--error svg {
+  fill: $colour-alert;
+}

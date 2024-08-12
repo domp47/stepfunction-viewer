@@ -1,0 +1,16 @@
+<div *ngIf="alert" [ngClass]="alertClass" class="alert">
+  <div class="alert__header" role="alert">
+    <div class="alert__header-icon">
+      <img [src]="iconName" alt="Alert Type" aria-hidden="true" />
+    </div>
+    <h2 class="alert__header-title h4" tabindex="0">{{ alert.title }}</h2>
+    <div *ngIf="alert.closeable" class="close-alert">
+      <button mat-icon-button matTooltip="Clear Alert" aria-label="Clear Alert" (click)="clearAlert()">
+        <mat-icon>clear</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="alert__body" role="alert">
+    <p [innerHTML]="alert.message"></p>
+  </div>
+</div>

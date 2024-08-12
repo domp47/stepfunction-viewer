@@ -1,0 +1,24 @@
+.container {
+  margin: 2rem;
+  display: flex;
+}
+
+.editor {
+  flex-grow: 1;
+
+  mat-form-field {
+    width: 95%;
+  }
+}
+
+.sfn-name {
+  min-width: 32rem;
+}
+
+.sfn-body {
+  height: 80vh !important;
+}
+
+.visualizer {
+  flex-grow: 1;
+}

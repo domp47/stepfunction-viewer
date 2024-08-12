@@ -1,0 +1,24 @@
+.filter-container {
+  margin: 2rem;
+
+  .filters {
+    display: flex;
+  }
+
+  .filter-item {
+    margin-right: 1rem;
+  }
+}
+
+.filter-input {
+  padding-top: 2rem;
+  width: 75%;
+}
+
+.sfn-endpoint-input {
+  min-width: 46rem;
+}
+
+.cancel-button {
+  margin-right: 1rem;
+}

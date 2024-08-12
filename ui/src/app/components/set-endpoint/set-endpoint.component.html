@@ -1,0 +1,19 @@
+<div class="filter-container" [formGroup]="form">
+  <h3>Setup:</h3>
+  <div class="filters">
+    <mat-form-field class="filter-item sfn-endpoint-input">
+      <mat-label>Step Function API Endpoint</mat-label>
+      <input matInput formControlName="apiEndpoint" />
+    </mat-form-field>
+  </div>
+  <div class="filters">
+    <mat-form-field class="filter-item">
+      <mat-label>AWS Region</mat-label>
+      <input matInput formControlName="region" />
+    </mat-form-field>
+  </div>
+  <div>
+    <button mat-flat-button color="warn" class="cancel-button" (click)="onCancelClick()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="onSaveClick()">Save</button>
+  </div>
+</div>

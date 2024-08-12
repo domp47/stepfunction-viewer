@@ -1,0 +1,22 @@
+<app-alert [alert]="alertInfo"></app-alert>
+<div [formGroup]="form">
+  <div class="container">
+    <mat-form-field class="sfn-name">
+      <mat-label>State Machine Name</mat-label>
+      <input matInput formControlName="sfnName" />
+    </mat-form-field>
+    <span class="spacer"></span>
+    <div>
+      <button mat-flat-button color="primary" (click)="createSfn()">Save</button>
+    </div>
+  </div>
+  <div class="container">
+    <div class="editor">
+      <mat-form-field>
+        <mat-label>Step Function Body</mat-label>
+        <textarea class="sfn-body" matInput formControlName="sfnBody"></textarea>
+      </mat-form-field>
+    </div>
+    <div class="visualizer">visualizer</div>
+  </div>
+</div>
