@@ -1,5 +1,4 @@
 import { Component, OnInit, Renderer2 } from "@angular/core";
-import { ConfigService } from "./services/config-service/config-service.service";
 import { RouterModule, RouterOutlet } from "@angular/router";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
@@ -20,10 +19,7 @@ export class AppComponent implements OnInit {
   lightModeToolTip = "Switch To Dark Mode";
   themeKey = "lightTheme";
 
-  constructor(
-    private renderer: Renderer2,
-    private configService: ConfigService,
-  ) {}
+  constructor(private renderer: Renderer2) {}
 
   ngOnInit(): void {
     console.log(

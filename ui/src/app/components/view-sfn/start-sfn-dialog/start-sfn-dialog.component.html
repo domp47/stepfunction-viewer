@@ -1,0 +1,18 @@
+<app-alert [alert]="alertInfo"></app-alert>
+<div class="dialog-container" [formGroup]="form">
+  <h1 mat-dialog-title>Start Execution</h1>
+  <button mat-flat-button color="accent" class="format-button" (click)="formatInput()">Format Input</button>
+  <mat-form-field class="sfn-input">
+    <mat-label>Execution Input</mat-label>
+    <textarea matInput formControlName="input" rows="10"></textarea>
+    <mat-hint>{{ errorMessage }}</mat-hint>
+  </mat-form-field>
+  <mat-dialog-actions class="action-buttons">
+    <div>
+      <mat-checkbox formControlName="newTab">Open In New Tab</mat-checkbox>
+    </div>
+    <span class="spacer"></span>
+    <button mat-flat-button color="warn" (click)="onCancelClick()">Cancel</button>
+    <button mat-flat-button color="primary" (click)="onSaveClick()">Start</button>
+  </mat-dialog-actions>
+</div>

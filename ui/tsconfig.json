@@ -18,7 +18,8 @@
     "importHelpers": true,
     "target": "ES2022",
     "module": "ES2022",
-    "lib": ["ES2022", "dom"]
+    "lib": ["ES2022", "dom"],
+    "allowJs": true // TODO remove this once I update all the files to TypeScript
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

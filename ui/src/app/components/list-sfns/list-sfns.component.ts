@@ -9,11 +9,12 @@ import {
 import { SfnClientService } from "../../services/sfn-client/sfn-client.service";
 import { Subscription } from "rxjs";
 import { NgIf } from "@angular/common";
+import { Router, RouterModule } from "@angular/router";
 
 @Component({
   selector: "app-list-sfns",
   standalone: true,
-  imports: [MatTableModule, NgIf],
+  imports: [MatTableModule, NgIf, RouterModule],
   templateUrl: "./list-sfns.component.html",
   styleUrl: "./list-sfns.component.scss",
 })
@@ -22,10 +23,13 @@ export class ListSfnsComponent implements OnInit, OnDestroy {
 
   private sfnClientSubscription: Subscription = new Subscription();
 
-  displayedColumns: string[] = [];
+  displayedColumns: string[] = ["name", "type", "creationDate", "stateMachineArn", "view", "edit"];
   tableData: StateMachineListItem[] = [];
 
-  constructor(private SfnClientService: SfnClientService) {
+  constructor(
+    private SfnClientService: SfnClientService,
+    private router: Router,
+  ) {
     this.client = SfnClientService.sfnClient.value;
   }
 
@@ -58,8 +62,10 @@ export class ListSfnsComponent implements OnInit, OnDestroy {
       nextToken = response.nextToken;
     } while (nextToken !== undefined);
 
-    console.log(stateMachines);
-
     this.tableData = stateMachines;
+  }
+
+  viewSfn(sfn: StateMachineListItem): void {
+    this.router.navigate(["/view-sfn", sfn.stateMachineArn]);
   }
 }

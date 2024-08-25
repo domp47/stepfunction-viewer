@@ -269,6 +269,10 @@ $altTheme: mat.m2-define-dark-theme(
   .mat-primary .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) .mdc-list-item__primary-text {
     color: map-get($map: $mat-accent, $key: main);
   }
+
+  a {
+    color: $light-text;
+  }
 }
 
 // Specific component overrides, pieces that are not in line with the general theming
@@ -343,4 +347,28 @@ body {
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
   background: #111;
+}
+
+.clusters rect {
+  fill: white;
+  stroke: #999;
+  stroke-width: 1.5px;
+}
+
+text {
+  font-weight: 300;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serf;
+  font-size: 14px;
+}
+
+.node rect,
+.node circle {
+  stroke: #999;
+  fill: #fff;
+  stroke-width: 1.5px;
+}
+
+.edgePath path {
+  stroke: #333;
+  stroke-width: 1.5px;
 }

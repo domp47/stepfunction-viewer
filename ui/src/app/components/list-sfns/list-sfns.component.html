@@ -2,9 +2,34 @@
   <div class="data-container">
     <div class="table-container table">
       <table mat-table [dataSource]="tableData" class="mat-elevation-z8" *ngIf="tableData.length > 0">
-        <ng-container *ngFor="let column of tableColumns" [matColumnDef]="column.name">
-          <th mat-header-cell mat-sort-header *matHeaderCellDef>{{ column.displayName }}</th>
-          <td mat-cell *matCellDef="let element">{{ element[column.name] }}</td>
+        <ng-container matColumnDef="name">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef>Sfn Name</th>
+          <td mat-cell *matCellDef="let element">{{ element.name }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="type">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef>Sfn Type</th>
+          <td mat-cell *matCellDef="let element">{{ element.type }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="creationDate">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef>Created At</th>
+          <td mat-cell *matCellDef="let element">{{ element.creationDate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="stateMachineArn">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef>ARN</th>
+          <td mat-cell *matCellDef="let element">{{ element.stateMachineArn }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="view">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef>View</th>
+          <td mat-cell *matCellDef="let element"><a [routerLink]="'/view-sfn/' + element.stateMachineArn">view</a></td>
+        </ng-container>
+
+        <ng-container matColumnDef="edit">
+          <th mat-header-cell mat-sort-header *matHeaderCellDef>Edit</th>
+          <td mat-cell *matCellDef="let element"><a [routerLink]="'/edit-sfn/' + element.stateMachineArn">edit</a></td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

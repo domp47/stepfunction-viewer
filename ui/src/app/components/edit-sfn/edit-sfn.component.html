@@ -1,14 +1,11 @@
 <app-alert [alert]="alertInfo"></app-alert>
 <div [formGroup]="form">
-  <h1>Create Step Function</h1>
+  <h1>Edit Step Function</h1>
   <div class="container">
-    <mat-form-field class="sfn-name">
-      <mat-label>State Machine Name</mat-label>
-      <input matInput formControlName="sfnName" />
-    </mat-form-field>
+    <h2>{{ sfnName }}</h2>
     <span class="spacer"></span>
     <div>
-      <button mat-flat-button color="primary" (click)="createSfn()">Save</button>
+      <button mat-flat-button color="primary" (click)="updateSfn()">Update</button>
     </div>
   </div>
   <div class="container">
