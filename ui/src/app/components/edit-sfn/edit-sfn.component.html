@@ -15,6 +15,8 @@
         <textarea class="sfn-body" matInput formControlName="sfnBody"></textarea>
       </mat-form-field>
     </div>
-    <div class="visualizer">visualizer</div>
+    <div class="visualizer">
+      <app-sfn-grapher [sfn]="sfnDefinition" [clickable]="false"></app-sfn-grapher>
+    </div>
   </div>
 </div>

@@ -3,19 +3,29 @@ import { FormControl, FormGroup, ReactiveFormsModule } from "@angular/forms";
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatInputModule } from "@angular/material/input";
 import { SfnClientService } from "../../services/sfn-client/sfn-client.service";
-import { Subscription } from "rxjs";
+import { Subscription, debounceTime } from "rxjs";
 import { CreateStateMachineCommand, CreateStateMachineInput, SFNClient } from "@aws-sdk/client-sfn";
 import { Router } from "@angular/router";
 import { MatIconModule } from "@angular/material/icon";
 import { MatButtonModule } from "@angular/material/button";
 import { AlertComponent, AlertInfo, AlertType } from "../alert/alert.component";
+import { StepFunction } from "../../services/step-function/step-function";
+import { SfnGrapherComponent } from "../sfn-grapher/sfn-grapher.component";
 
 // TODO - Use highlight library: https://www.npmjs.com/package/ngx-highlightjs
 
 @Component({
   selector: "app-create-sfn",
   standalone: true,
-  imports: [MatFormFieldModule, ReactiveFormsModule, MatInputModule, MatIconModule, MatButtonModule, AlertComponent],
+  imports: [
+    MatFormFieldModule,
+    ReactiveFormsModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    AlertComponent,
+    SfnGrapherComponent,
+  ],
   templateUrl: "./create-sfn.component.html",
   styleUrl: "./create-sfn.component.scss",
 })
@@ -25,10 +35,13 @@ export class CreateSfnComponent implements OnInit, OnDestroy {
     sfnName: new FormControl<string>(""),
   });
 
+  sfnDefinition: StepFunction | undefined = undefined;
+
   alertInfo: AlertInfo | undefined;
 
   private client: SFNClient;
   private clientSubscription: Subscription = new Subscription();
+  private formChangeSubscription: Subscription = new Subscription();
 
   constructor(
     private sfnClientService: SfnClientService,
@@ -41,10 +54,38 @@ export class CreateSfnComponent implements OnInit, OnDestroy {
     this.clientSubscription = this.sfnClientService.sfnClient.subscribe((client) => {
       this.client = client;
     });
+
+    this.formChangeSubscription = this.form.valueChanges
+      .pipe(debounceTime(100))
+      .subscribe(() => this.validateAndUpdateSfn());
   }
 
   ngOnDestroy(): void {
     this.clientSubscription.unsubscribe();
+    this.formChangeSubscription.unsubscribe();
+  }
+
+  async validateAndUpdateSfn(): Promise<void> {
+    // AWS Local SFN doesn't support this API endpoint yet :'(
+    // const command = new ValidateStateMachineDefinitionCommand({definition: this.form.value.sfnBody ?? "{}"});
+    // const response = await this.client.send(command);
+
+    // if (response.result !== "OK") {
+    //   let errorMessage = "";
+    //   for (const diagnostic of response.diagnostics ?? []) {
+    //     errorMessage += `(${diagnostic.severity}) ${diagnostic.message}<br>`;
+    //   }
+
+    //   this.alertInfo = {
+    //     type: AlertType.Error,
+    //     title: `Error: Invalid State Machine Definition`,
+    //     message: errorMessage,
+    //     closeable: true,
+    //   };
+    //   return;
+    // }
+
+    this.sfnDefinition = JSON.parse(this.form.value.sfnBody ?? "{}");
   }
 
   async createSfn(): Promise<void> {

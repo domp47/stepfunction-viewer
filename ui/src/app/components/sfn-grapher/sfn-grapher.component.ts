@@ -1,9 +1,9 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from "@angular/core";
-import { buildGraph } from "../../../services/step-function/graph";
-import { StepFunction } from "../../../services/step-function/step-function";
+import { buildGraph } from "../../services/step-function/graph";
+import { StepFunction } from "../../services/step-function/step-function";
 import * as d3 from "d3";
 import * as graphlib from "@dagrejs/graphlib";
-import * as dagresRender from "../../../services/step-function/render/render";
+import * as dagresRender from "../../services/step-function/render/render";
 
 @Component({
   selector: "app-sfn-grapher",
@@ -14,7 +14,7 @@ import * as dagresRender from "../../../services/step-function/render/render";
 })
 export class SfnGrapherComponent implements OnChanges {
   @Input({ required: true }) sfn: StepFunction | undefined;
-  @Input({ required: false }) clickable: boolean = false;
+  @Input({ required: true }) clickable!: boolean;
   @Output() stepClicked: EventEmitter<string> = new EventEmitter<string>();
 
   @ViewChild("sfnGraph")

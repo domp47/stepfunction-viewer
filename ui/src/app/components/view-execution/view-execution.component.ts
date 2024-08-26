@@ -10,7 +10,7 @@ import {
   HistoryEvent,
   SFNClient,
 } from "@aws-sdk/client-sfn";
-import { SfnGrapherComponent } from "./sfn-grapher/sfn-grapher.component";
+import { SfnGrapherComponent } from "../sfn-grapher/sfn-grapher.component";
 import { StepFunction } from "../../services/step-function/step-function";
 
 @Component({
