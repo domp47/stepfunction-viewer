@@ -16,6 +16,7 @@ export class SfnGrapherComponent implements OnChanges {
   @Input({ required: true }) sfn: StepFunction | undefined;
   @Input({ required: true }) clickable!: boolean;
   @Output() stepClicked: EventEmitter<string> = new EventEmitter<string>();
+  @Output() graphLoaded: EventEmitter<void> = new EventEmitter<void>();
 
   @ViewChild("sfnGraph")
   private graphContainer!: ElementRef;
@@ -80,7 +81,7 @@ export class SfnGrapherComponent implements OnChanges {
 
       render(inner, g);
 
-      if (!this.clickable) {
+      if (this.clickable) {
         inner
           .selectAll("g.node")
           .style("cursor", "pointer")
@@ -99,6 +100,8 @@ export class SfnGrapherComponent implements OnChanges {
           .translate((svgWidth - g.graph().width * initialScale) / 2, (svgHeight - g.graph().height * initialScale) / 2)
           .scale(initialScale),
       );
+
+      this.graphLoaded.emit();
     } catch (error) {
       console.log(error);
     }

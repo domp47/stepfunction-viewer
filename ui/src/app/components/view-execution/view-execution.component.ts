@@ -3,8 +3,6 @@ import { ActivatedRoute } from "@angular/router";
 import { SfnClientService } from "../../services/sfn-client/sfn-client.service";
 import { Subscription } from "rxjs";
 import {
-  DescribeExecutionCommand,
-  DescribeStateMachineCommand,
   DescribeStateMachineForExecutionCommand,
   GetExecutionHistoryCommand,
   HistoryEvent,
@@ -12,6 +10,7 @@ import {
 } from "@aws-sdk/client-sfn";
 import { SfnGrapherComponent } from "../sfn-grapher/sfn-grapher.component";
 import { StepFunction } from "../../services/step-function/step-function";
+import { parseExecution } from "../../services/step-function/parse-execution";
 
 @Component({
   selector: "app-view-execution",
@@ -42,10 +41,7 @@ export class ViewExecutionComponent implements OnInit, OnDestroy {
       this.client = client;
     });
 
-    const execution = await this.getExecutionDetails();
     this.sfnDefinition = await this.getSfnDefinition();
-    console.log(execution);
-    // console.log(definition);
   }
 
   async getSfnDefinition(): Promise<any> {
@@ -80,6 +76,11 @@ export class ViewExecutionComponent implements OnInit, OnDestroy {
     } while (nextToken !== undefined);
 
     return executionData;
+  }
+
+  async onGraphLoaded(): Promise<void> {
+    const execution = await this.getExecutionDetails();
+    parseExecution(execution);
   }
 
   ngOnDestroy(): void {

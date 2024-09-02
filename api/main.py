@@ -16,7 +16,10 @@ def proxy():
     resp = requests.post(f"http://localhost:8083{path}", data=data, headers=headers, params=params)
     resp_headers = {key: value for key, value in resp.headers.items()}
 
-    return Response(resp.text, status=resp.status_code, headers=resp_headers)
+    # Remove the Transfer-Encoding header to let Flask set it automatically
+    resp_headers.pop("Transfer-Encoding", None)
+
+    return Response(resp.content, status=resp.status_code, headers=resp_headers)
 
 
 if __name__ == '__main__':

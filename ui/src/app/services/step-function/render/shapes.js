@@ -15,6 +15,7 @@ module.exports = {
 function rect(parent, bbox, node) {
   var shapeSvg = parent
     .insert("rect", ":first-child")
+    .attr("id", `${node.label}-step`)
     .attr("rx", node.rx)
     .attr("ry", node.ry)
     .attr("x", -bbox.width / 2)

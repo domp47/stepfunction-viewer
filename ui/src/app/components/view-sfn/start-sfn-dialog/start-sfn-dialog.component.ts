@@ -17,6 +17,7 @@ import { SFNClient, StartExecutionCommand } from "@aws-sdk/client-sfn";
 import { Subscription } from "rxjs";
 import { SfnClientService } from "../../../services/sfn-client/sfn-client.service";
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { Router } from "@angular/router";
 
 @Component({
   selector: "app-start-sfn-dialog",
@@ -56,6 +57,7 @@ export class StartSfnDialogComponent implements OnInit, OnDestroy {
     public dialogRef: MatDialogRef<StartSfnDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: string,
     private sfnClientService: SfnClientService,
+    private router: Router,
   ) {
     this.stateMachineArn = data;
     this.client = sfnClientService.sfnClient.value;
@@ -97,8 +99,10 @@ export class StartSfnDialogComponent implements OnInit, OnDestroy {
       input: this.form.value.input ?? "{}",
     });
 
+    let executionArn: string | undefined;
     try {
-      await this.client.send(command);
+      const response = await this.client.send(command);
+      executionArn = response.executionArn;
     } catch (error: any) {
       this.alertInfo = {
         type: AlertType.Error,
@@ -110,6 +114,17 @@ export class StartSfnDialogComponent implements OnInit, OnDestroy {
     }
 
     this.dialogRef.close();
-    // TODO redirect to execution page
+
+    // This should never happen, but typescript...
+    if (executionArn === undefined) {
+      return;
+    }
+
+    if (this.form.value.newTab) {
+      const url = this.router.createUrlTree(["/view-execution", executionArn]);
+      window.open(url.toString(), "_blank");
+    } else {
+      this.router.navigate(["/view-execution", executionArn]);
+    }
   }
 }
