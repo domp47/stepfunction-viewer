@@ -1,4 +1,4 @@
-import { output } from "@angular/core";
+import { taskMap } from "./event-mapper";
 import { HistoryEvent, HistoryEventType } from "@aws-sdk/client-sfn";
 
 export enum StepFunctionStepStatus {
@@ -37,104 +37,93 @@ export interface StepFunctionStepExecutionData {
   events: HistoryEvent[];
 }
 
-function calculateStepData(stepName: string, stepEvents: HistoryEvent[]): StepFunctionStepExecutionData {
-  const smallestId = Math.min.apply(stepEvents.map((event) => event.id ?? Number.MAX_SAFE_INTEGER));
+class SfnEventNode {
+  event: HistoryEvent;
+  children: SfnEventNode[];
 
-  const stepData: StepFunctionStepExecutionData = {
-    step: stepName,
-    order: smallestId,
-    status: StepFunctionStepStatus.SUCCEEDED,
-    input: {
-      input: "",
-      inputPath: "",
-      parameters: "",
-      taskInput: "",
-    },
-    output: {
-      taskResult: "",
-      resultSelector: "",
-      resultPath: "",
-      outputPath: "",
-      output: "",
-    },
-    details: {
-      status: "",
-      type: "",
-      timeoutSeconds: 0,
-      heartbeatSeconds: 0,
-      startedAfter: "",
-      duration: "",
-    },
-    events: stepEvents,
-  };
-
-  return stepData;
+  constructor(event: HistoryEvent, children: SfnEventNode[] = []) {
+    this.event = event;
+    this.children = children;
+  }
 }
 
-function getDetailsFromStep(step: HistoryEvent): any {
-  for (const key in step) {
-    if (key.endsWith("EventDetails") && (step as any)[key] !== undefined) {
-      return (step as any)[key];
+function buildGraph(events: HistoryEvent[]): Map<number, SfnEventNode> {
+  const sfnEventNodes: Map<number, SfnEventNode> = new Map();
+
+  for (const event of events) {
+    if (event.id) {
+      sfnEventNodes.set(event.id, new SfnEventNode(event));
     }
   }
 
-  return undefined;
-}
-
-interface GetStepsByNamesResult {
-  eventsByStep: Record<string, HistoryEvent[]>;
-  awsEvents: HistoryEvent[];
-}
-
-function getStepsByNames(history: HistoryEvent[]): GetStepsByNamesResult {
-  const eventsByStep: Record<string, HistoryEvent[]> = {};
-  const awsEvents: HistoryEvent[] = [];
-
-  for (const event of history) {
-    const stepType = event.type;
-    // This shouldn't happen, but just cause typescript...
-    if (stepType === undefined) {
-      continue;
-    }
-
-    const details = getDetailsFromStep(event);
-
-    let stepName: string | undefined = undefined;
-    if (details !== undefined && "name" in (details as any)) {
-      stepName = (details as any).name;
-    }
-
-    if (stepName === undefined) {
-      awsEvents.push(event);
-    } else {
-      if (eventsByStep[stepName] === undefined) {
-        eventsByStep[stepName] = [];
-      }
-      eventsByStep[stepName].push(event);
+  for (const event of events) {
+    const previousEventId = event.previousEventId ?? -1;
+    const parentNode = sfnEventNodes.get(previousEventId);
+    const currentNode = sfnEventNodes.get(event.id ?? -1);
+    if (parentNode && currentNode) {
+      parentNode.children.push(currentNode);
     }
   }
 
-  return { eventsByStep, awsEvents };
+  return sfnEventNodes;
 }
 
-export interface StepFunctionExecutionDataResult {
-  executionSteps: StepFunctionStepExecutionData[];
-  awsInformation: HistoryEvent[];
+interface StackItem {
+  stepStart: HistoryEvent;
+  events: HistoryEvent[];
+  stepNumber: number;
 }
 
-export function parseExecution(history: HistoryEvent[]): StepFunctionExecutionDataResult {
+export function parseExecution(history: HistoryEvent[]): StepFunctionStepExecutionData[] {
   const executionSteps: StepFunctionStepExecutionData[] = [];
 
   console.log(history);
-  const { eventsByStep, awsEvents } = getStepsByNames(history);
-  console.log(eventsByStep);
-  console.log(awsEvents);
 
-  // TODO use the Id's to build a DAG of the steps. Then Crawl the DAG to get the order of the steps, using started as the entry point.
-  // Then use either Failed, Aborted, Exited, TimedOut, or Succeeded as the exit point.
-  for (const [stepName, stepEvents] of Object.entries(eventsByStep)) {
-    executionSteps.push(calculateStepData(stepName, stepEvents));
+  const vertices = buildGraph(history);
+
+  const sfnSteps: StackItem[] = [];
+  const stack: StackItem[] = [];
+  let stepNumber = 0;
+
+  function dfs(node: SfnEventNode) {
+    // This is a step end event, pop the stack and add the step to the execution steps
+    if (stack.length > 0 && taskMap[stack[0].stepStart.type ?? ""].has(node.event.type ?? "")) {
+      const step = stack.shift();
+      step?.events.push(node.event);
+      // This will never be undefined because we check the length of the stack, but TS apparently doesn't know that :')
+      if (step) {
+        sfnSteps.push(step);
+      }
+    }
+    // This is a step start event, add a new item to the stack
+    else if (taskMap.hasOwnProperty(node.event.type ?? "")) {
+      stack.unshift({
+        stepStart: node.event,
+        events: [node.event],
+        stepNumber: stepNumber++,
+      });
+    }
+    // This is neither a step start or end event, add the event to the top of the stack
+    // The stack __should__ always have at least one item in it, but we gotta check cuz TS
+    else if (stack.length > 0) {
+      stack[0].events.push(node.event);
+    }
+
+    for (const child of node.children) {
+      dfs(child);
+    }
   }
 
-  return { executionSteps, awsInformation: awsEvents };
+  // Start the DFS from the root node
+  const root = vertices.get(2);
+  if (root) {
+    // TODO doesn't work completely as expected, but it's a start
+    dfs(root);
+  }
+
+  sfnSteps.sort((a, b) => a.stepNumber - b.stepNumber);
+
+  console.log(sfnSteps);
+
+  return executionSteps;
 }
