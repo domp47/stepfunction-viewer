@@ -1,6 +1,11 @@
 <div class="container">
   <div class="editor">
-    <app-sfn-grapher [sfn]="sfnDefinition" [clickable]="true" (graphLoaded)="onGraphLoaded()"></app-sfn-grapher>
+    <app-sfn-grapher
+      [sfn]="sfnDefinition"
+      [clickable]="true"
+      (stepClicked)="stepClicked($event)"
+      (graphLoaded)="onGraphLoaded()"
+    ></app-sfn-grapher>
   </div>
   <div class="visualizer">visualizer</div>
 </div>

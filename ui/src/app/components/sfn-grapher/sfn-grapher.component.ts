@@ -46,7 +46,7 @@ export class SfnGrapherComponent implements OnChanges {
     const tspans = element.getElementsByTagName("tspan");
     const tspan = tspans.length > 0 ? tspans[0] : undefined;
 
-    if (tspan !== undefined && this.sfn !== undefined && this.sfn.States.hasOwnProperty(tspan.innerHTML)) {
+    if (tspan !== undefined) {
       this.stepClicked.emit(tspan.innerHTML);
     }
   }

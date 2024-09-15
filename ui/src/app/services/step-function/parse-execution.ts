@@ -1,41 +1,6 @@
 import { taskMap } from "./event-mapper";
-import { HistoryEvent, HistoryEventType } from "@aws-sdk/client-sfn";
-
-export enum StepFunctionStepStatus {
-  SUCCEEDED = "SUCCEEDED",
-  FAILED = "FAILED",
-  TIMED_OUT = "TIMED_OUT",
-  ABORTED = "ABORTED",
-  RUNNING = "RUNNING",
-}
-
-export interface StepFunctionStepExecutionData {
-  step: string;
-  order: number;
-  status: StepFunctionStepStatus;
-  input: {
-    input: string;
-    inputPath: string;
-    parameters: string;
-    taskInput: string;
-  };
-  output: {
-    taskResult: string;
-    resultSelector: string;
-    resultPath: string;
-    outputPath: string;
-    output: string;
-  };
-  details: {
-    status: string;
-    type: string;
-    timeoutSeconds: number;
-    heartbeatSeconds: number;
-    startedAfter: string;
-    duration: string;
-  };
-  events: HistoryEvent[];
-}
+import { HistoryEvent } from "@aws-sdk/client-sfn";
+import { PriorityQueue } from "../../utils/priority-queue";
 
 class SfnEventNode {
   event: HistoryEvent;
@@ -68,62 +33,85 @@ function buildGraph(events: HistoryEvent[]): Map<number, SfnEventNode> {
   return sfnEventNodes;
 }
 
-interface StackItem {
+export interface SfnStepItem {
   stepStart: HistoryEvent;
   events: HistoryEvent[];
   stepNumber: number;
 }
 
-export function parseExecution(history: HistoryEvent[]): StepFunctionStepExecutionData[] {
-  const executionSteps: StepFunctionStepExecutionData[] = [];
+type Tuple<T, V> = [T, V];
 
-  console.log(history);
-
+export function parseExecution(history: HistoryEvent[]): SfnStepItem[] {
   const vertices = buildGraph(history);
 
-  const sfnSteps: StackItem[] = [];
-  const stack: StackItem[] = [];
+  const sfnSteps: SfnStepItem[] = [];
+  const pendingSteps: Record<string, SfnStepItem> = {};
+  const pQueue = new PriorityQueue<Tuple<SfnEventNode, number[]>>();
+  const visited = new Set<number>();
+
   let stepNumber = 0;
 
-  function dfs(node: SfnEventNode) {
+  const root = vertices.get(2);
+  if (root) {
+    pQueue.enqueue([root, []], 2);
+  }
+
+  while (pQueue.size() > 0) {
+    const item = pQueue.dequeue();
+
+    // Event will never be undefined because we check the size of the queue, but TS doesn't know that :')
+    if (item === undefined) {
+      continue;
+    }
+
+    const [node, parentIds] = item;
+    let nextId = parentIds[0];
+    const pendingStep = pendingSteps.hasOwnProperty(nextId) ? pendingSteps[nextId] : undefined;
+
     // This is a step end event, pop the stack and add the step to the execution steps
-    if (stack.length > 0 && taskMap[stack[0].stepStart.type ?? ""].has(node.event.type ?? "")) {
-      const step = stack.shift();
-      step?.events.push(node.event);
-      // This will never be undefined because we check the length of the stack, but TS apparently doesn't know that :')
-      if (step) {
-        sfnSteps.push(step);
-      }
+    if (pendingStep && taskMap[pendingStep.stepStart.type ?? ""].has(node.event.type ?? "")) {
+      delete pendingSteps[nextId];
+      parentIds.shift();
+
+      pendingStep.events.push(node.event);
+      sfnSteps.push(pendingStep);
+
+      // The step is done, so all children added to the queue will be the parent of the following steps
+      nextId = parentIds.length > 0 ? parentIds[0] : -1;
     }
     // This is a step start event, add a new item to the stack
     else if (taskMap.hasOwnProperty(node.event.type ?? "")) {
-      stack.unshift({
+      pendingSteps[node.event.id ?? 0] = {
         stepStart: node.event,
         events: [node.event],
         stepNumber: stepNumber++,
-      });
+      };
+      nextId = node.event.id ?? 0;
+      parentIds.unshift(nextId);
     }
-    // This is neither a step start or end event, add the event to the top of the stack
-    // The stack __should__ always have at least one item in it, but we gotta check cuz TS
-    else if (stack.length > 0) {
-      stack[0].events.push(node.event);
+    // This is neither a step start or end event, add the event to the pending step
+    // The pending step __should__ always exist...
+    else if (pendingStep) {
+      pendingStep.events.push(node.event);
     }
 
     for (const child of node.children) {
-      dfs(child);
+      if (visited.has(child.event.id ?? 0)) {
+        continue;
+      }
+
+      const childId = child.event.id ?? 0;
+
+      visited.add(node.event.id ?? 0);
+      pQueue.enqueue([child, [...parentIds]], childId);
     }
   }
 
-  // Start the DFS from the root node
-  const root = vertices.get(2);
-  if (root) {
-    // TODO doesn't work completely as expected, but it's a start
-    dfs(root);
+  for (const key in pendingSteps) {
+    sfnSteps.push(pendingSteps[key]);
   }
 
   sfnSteps.sort((a, b) => a.stepNumber - b.stepNumber);
 
-  console.log(sfnSteps);
-
-  return executionSteps;
+  return sfnSteps;
 }

@@ -372,3 +372,19 @@ text {
   stroke: #333;
   stroke-width: 1.5px;
 }
+
+.step-succeeded {
+  fill: #32b839 !important;
+}
+
+.step-failed {
+  fill: #df8b8c !important;
+}
+
+.step-running {
+  fill: #4cafce !important;
+}
+
+.step-aborted {
+  fill: #bfc0c1 !important;
+}
