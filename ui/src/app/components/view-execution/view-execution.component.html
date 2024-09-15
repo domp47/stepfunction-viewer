@@ -7,5 +7,7 @@
       (graphLoaded)="onGraphLoaded()"
     ></app-sfn-grapher>
   </div>
-  <div class="visualizer">visualizer</div>
+  <div class="visualizer">
+    <app-view-step-detail [stepData]="selectedStep"></app-view-step-detail>
+  </div>
 </div>

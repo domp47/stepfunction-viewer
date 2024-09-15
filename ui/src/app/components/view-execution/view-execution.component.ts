@@ -19,11 +19,12 @@ import {
   compileStepData,
 } from "../../services/step-function/compile-step-data";
 import { CommonModule, DOCUMENT } from "@angular/common";
+import { ViewStepDetailComponent } from "../view-step-detail/view-step-detail.component";
 
 @Component({
   selector: "app-view-execution",
   standalone: true,
-  imports: [SfnGrapherComponent, CommonModule],
+  imports: [SfnGrapherComponent, CommonModule, ViewStepDetailComponent],
   templateUrl: "./view-execution.component.html",
   styleUrl: "./view-execution.component.scss",
 })
@@ -37,7 +38,7 @@ export class ViewExecutionComponent implements OnInit, OnDestroy {
   sfnDefinitionString: string | undefined = undefined;
 
   stepData: (StepFunctionMapStepExecutionData | StepFunctionStepExecutionData)[] = [];
-  stepClickedEmitter = new EventEmitter<StepFunctionMapStepExecutionData | StepFunctionStepExecutionData>();
+  selectedStep: StepFunctionMapStepExecutionData | StepFunctionStepExecutionData | undefined = undefined;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -128,16 +129,16 @@ export class ViewExecutionComponent implements OnInit, OnDestroy {
     }
     console.log(stepData);
     this.stepData = stepData;
+    this.stepClicked("Skip");
   }
 
   stepClicked(stepName: string): void {
     const step = this.stepData.find((stepData) => stepData.step === stepName);
     if (step === undefined) {
       console.error(`Step ${stepName} not found`);
-      return;
     }
 
-    this.stepClickedEmitter.emit(step);
+    this.selectedStep = step;
   }
 
   ngOnDestroy(): void {

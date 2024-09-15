@@ -270,6 +270,18 @@ $altTheme: mat.m2-define-dark-theme(
     color: map-get($map: $mat-accent, $key: main);
   }
 
+  .mat-mdc-tab-group,
+  .mat-mdc-tab-nav-bar {
+    --mdc-tab-indicator-active-indicator-color: #e9c46a;
+    --mat-tab-header-active-label-text-color: #e9c46a;
+    --mat-tab-header-active-ripple-color: #e9c46a;
+    --mat-tab-header-inactive-ripple-color: #e9c46a;
+    --mat-tab-header-active-focus-label-text-color: #e9c46a;
+    --mat-tab-header-active-hover-label-text-color: #e9c46a;
+    --mat-tab-header-active-focus-indicator-color: #e9c46a;
+    --mat-tab-header-active-hover-indicator-color: #e9c46a;
+  }
+
   a {
     color: $light-text;
   }

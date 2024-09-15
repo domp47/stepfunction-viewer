@@ -1,9 +1,10 @@
-import { Component, OnInit, Renderer2 } from "@angular/core";
+import { Component, OnInit, Renderer2, inject } from "@angular/core";
 import { RouterModule, RouterOutlet } from "@angular/router";
 import { MatIconModule } from "@angular/material/icon";
 import { MatTooltipModule } from "@angular/material/tooltip";
 import { MatToolbarModule } from "@angular/material/toolbar";
 import { MatButtonModule } from "@angular/material/button";
+import { HighlightLoader } from "ngx-highlightjs";
 
 @Component({
   selector: "app-root",
@@ -19,6 +20,11 @@ export class AppComponent implements OnInit {
   lightModeToolTip = "Switch To Dark Mode";
   themeKey = "lightTheme";
 
+  darkCodeTheme = "code-styles/stackoverflow-dark.css";
+  lightCodeTheme = "code-styles/stackoverflow-light.css";
+
+  private hljsLoader: HighlightLoader = inject(HighlightLoader);
+
   constructor(private renderer: Renderer2) {}
 
   ngOnInit(): void {
@@ -32,6 +38,9 @@ export class AppComponent implements OnInit {
       this.lightMode = true;
       this.renderer.addClass(document.body, "dark-mode");
       this.lightModeToolTip = "Switch To Light Mode";
+      this.hljsLoader.setTheme(this.darkCodeTheme);
+    } else {
+      this.hljsLoader.setTheme(this.lightCodeTheme);
     }
   }
 
@@ -42,9 +51,11 @@ export class AppComponent implements OnInit {
     if (this.lightMode) {
       this.renderer.addClass(document.body, "dark-mode");
       this.lightModeToolTip = "Switch To Light Mode";
+      this.hljsLoader.setTheme(this.darkCodeTheme);
     } else {
       this.renderer.removeClass(document.body, "dark-mode");
       this.lightModeToolTip = "Switch To Dark Mode";
+      this.hljsLoader.setTheme(this.lightCodeTheme);
     }
   }
 }

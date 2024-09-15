@@ -32,6 +32,11 @@
                 "glob": "**/*",
                 "input": "assets",
                 "output": "/assets"
+              },
+              {
+                "glob": "stackoverflow*",
+                "input": "node_modules/highlight.js/styles/",
+                "output": "/code-styles"
               }
             ],
             "styles": ["src/styles.scss"],
@@ -91,6 +96,11 @@
                 "glob": "**/*",
                 "input": "assets",
                 "output": "/assets"
+              },
+              {
+                "glob": "stackoverflow*",
+                "input": "node_modules/highlight.js/styles/",
+                "output": "/code-styles"
               }
             ],
             "styles": ["src/styles.scss"],

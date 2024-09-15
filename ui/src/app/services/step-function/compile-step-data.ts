@@ -112,6 +112,12 @@ function getDataForFlowStep(
 
   const timeStartAfter = (enteredEvent.timestamp ?? sfnExecutionTime).getTime() - sfnExecutionTime.getTime();
 
+  let inputData = enteredEvent.stateEnteredEventDetails?.input ?? "{}";
+  inputData = JSON.stringify(JSON.parse(inputData), null, 2);
+
+  let inputParams = stepDef?.Parameters ?? {};
+  inputParams = JSON.stringify(inputParams, null, 2);
+
   return {
     stepType: "flow",
     step: enteredEvent.stateEnteredEventDetails?.name ?? "",
@@ -119,9 +125,9 @@ function getDataForFlowStep(
     status: result,
     definition: defStr,
     input: {
-      input: enteredEvent.stateEnteredEventDetails?.input ?? "",
+      input: inputData,
       inputPath: stepDef?.InputPath ?? "",
-      parameters: stepDef?.Parameters ?? "",
+      parameters: inputParams,
       taskInput: "",
     },
     output: {
@@ -235,9 +241,15 @@ function getDataForTaskStep(
   const taskScheduledEvent = event.events.find((e) => e.type === HistoryEventType.TaskScheduled);
   const taskSucceededEvent = event.events.find((e) => e.type === HistoryEventType.TaskSucceeded);
 
+  let taskInput = taskScheduledEvent?.taskScheduledEventDetails?.parameters ?? "";
+  taskInput = JSON.stringify(JSON.parse(taskInput), null, 2);
+
+  let taskResult = taskSucceededEvent?.taskSucceededEventDetails?.output ?? "";
+  taskResult = JSON.stringify(JSON.parse(taskResult), null, 2);
+
   const data = getDataForFlowWithDurationStep(event, stepDefs, sfnExecutionTime);
-  data.input.taskInput = taskScheduledEvent?.taskScheduledEventDetails?.parameters ?? "";
-  data.output.taskResult = taskSucceededEvent?.taskSucceededEventDetails?.output ?? "";
+  data.input.taskInput = taskInput;
+  data.output.taskResult = taskResult;
   data.details.timeoutSeconds = taskScheduledEvent?.taskScheduledEventDetails?.timeoutInSeconds;
   data.details.heartbeatSeconds = taskScheduledEvent?.taskScheduledEventDetails?.heartbeatInSeconds;
 

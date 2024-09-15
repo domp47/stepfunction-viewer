@@ -6,6 +6,7 @@ import { provideClientHydration } from "@angular/platform-browser";
 import { provideAnimationsAsync } from "@angular/platform-browser/animations/async";
 import { provideHttpClient, withFetch } from "@angular/common/http";
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from "@angular/material/form-field";
+import { provideHighlightOptions } from "ngx-highlightjs";
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,5 +19,12 @@ export const appConfig: ApplicationConfig = {
       provide: MAT_FORM_FIELD_DEFAULT_OPTIONS,
       useValue: { appearance: "outline" },
     },
+    provideHighlightOptions({
+      coreLibraryLoader: () => import("highlight.js/lib/core"),
+      lineNumbersLoader: () => import("ngx-highlightjs/line-numbers"), // Optional, add line numbers if needed
+      languages: {
+        json: () => import("highlight.js/lib/languages/json"),
+      },
+    }),
   ],
 };

@@ -1,0 +1,40 @@
+<mat-tab-group animationDuration="0ms">
+  <mat-tab label="Input">
+    <mat-expansion-panel expanded="true" togglePosition="before">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Input </mat-panel-title>
+      </mat-expansion-panel-header>
+      <pre>
+        <code [highlight]="stepData?.input?.input ?? ''" language="json" lineNumbers></code>
+      </pre>
+    </mat-expansion-panel>
+    <mat-expansion-panel expanded="true" togglePosition="before">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Input Path </mat-panel-title>
+      </mat-expansion-panel-header>
+      <pre>
+        <code [highlight]="stepData?.input?.inputPath ?? ''" language="json"></code>
+      </pre>
+    </mat-expansion-panel>
+    <mat-expansion-panel expanded="true" togglePosition="before">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Parameters </mat-panel-title>
+      </mat-expansion-panel-header>
+      <pre>
+        <code [highlight]="stepData?.input?.parameters ?? ''" language="json" lineNumbers></code>
+      </pre>
+    </mat-expansion-panel>
+    <mat-expansion-panel expanded="true" togglePosition="before">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Task Input </mat-panel-title>
+      </mat-expansion-panel-header>
+      <pre>
+        <code [highlight]="stepData?.input?.taskInput ?? ''" language="json" lineNumbers></code>
+      </pre>
+    </mat-expansion-panel>
+  </mat-tab>
+  <mat-tab label="Output"> Content 2 </mat-tab>
+  <mat-tab label="Details"> Content 3 </mat-tab>
+  <mat-tab label="Definition"> Content 3 </mat-tab>
+  <mat-tab label="Events"> Content 3 </mat-tab>
+</mat-tab-group>
